@@ -17,74 +17,60 @@ class Grades extends EventEmitter {
         });
 
         this.on(eventsConfig.GETGRADEBYID, function(id) { 
+            var tempJson = null;
             this.data.forEach(function(entry) {
-                if(entry.studentId == id){
-                    this.json = entry;
+                if(entry.id == id){
+                    tempJson = entry;
                 }
             });
-           if (this.json == null){
-            this.json = {'Error': 'Wrong Id',
+           if (tempJson == null){
+            tempJson = {'Error': 'Wrong Id',
                         'status':false,
                        'ShowAll': 'to see the list of students => path: getAllStudentsGrades'};
             }
+            this.json = tempJson;
         });
 
         this.on(eventsConfig.GETTOPBYYEAR, function(year) {
             var jsonGrades = this.data;
-            var len = jsonGrades.length;
-            var limit = 0;
             var topCount = 0;
-            var temp;
+            var tempJson = [];
             jsonGrades.forEach(function(grade){
             		if(grade.year == year){
             			if(topCount >= 3){
-            				temp.forEach(function(topGrade){
-            					if(topGrade.avg < grade){
-            						if(topGrade.avg == limit){
-            							temp.remove(topGrade);
-            							temp.add(grade);
-            						}
-            					}
-            				})
-            				temp.forEach(function(topGrade){
-        						if(topGrade.avg < limit){
-        							limit = topGrade.avg;
-        						}
-            				})
+            				if(grade.avg > tempJson[tempJson.length - 1].avg){
+            					tempJson.pop();
+            					tempJson.push(grade);
+            				}
             			}
             			else{
-            				temp.add(grade);
-            				if(grade.avg < limit){
-            					limit = grade.avg;
-            				}
+            				tempJson.push(grade);
             				topCount++;
             			}
-            			this.json = temp;
+            			tempJson.sort(function(a, b) {
+            				return b.avg - a.avg;
+            			});
             		}
-            })
-            if(this.json == null){ // if we didnt find any students in the year
-                this.json = {'Error':'cannot find any students in year: ' + year,'status':false};
+            });
+            if(tempJson == null){ 
+                tempJson = {'Error':'cannot find any students in year: ' + year,'status':false};
             }
+            this.json = tempJson;
         });
     }
 
     getGrades() {
         this.emit(eventsConfig.GETGRADES);
-            console.log('\nStudents list\n\n' + this.data);
         return this.data;
     }
 
     geGradeById(id) {
        this.emit(eventsConfig.GETGRADEBYID,id);
-       if(this.data.status == false)
-            console.log('\nStudent id @:'+ id +' \n\n' + this.json);
        return this.json;
     }
 
     getTopGradesByYear(year) {
         this.emit(eventsConfig.GETTOPBYYEAR,year);
-        if(this.data.status == false)
-            console.log('\nTop 3 students in year:'+ year +'\n\n'+this.json);
         return this.json;
     }
 }

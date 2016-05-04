@@ -12,12 +12,7 @@ var express = require('express'),
 mongoose.connection.once('open', function(){
 	db_schema.find({}, function(err, data){
 		console.log("connected to mongoDB");
-		if(err != null){
-			StudentGrades = new Grades(data); 
-		}
-		else{
-			console.log(err);
-		}
+		StudentGrades = new Grades(data); 
 		mongoose.disconnect(); 
 	});
 });
@@ -38,7 +33,7 @@ app.get('/getGradeById/:id', function(req, res){
 
 app.get('/getTopGradesByYear/:year', function(req, res){
 	jsonData = StudentGrades.getTopGradesByYear(req.params.year);
-	if (tempJson.status == false){
+	if (jsonData.status == false){
 		res.set('header-TopGradesByYear',"cannot find any studnet in that year!");
 		res.status(400).json(jsonData);
 	}
@@ -58,4 +53,4 @@ app.all('*', function(req,res){
 });
 
 http.createServer(app).listen(port);
-console.log('server is listening on port' + port);
+console.log('server is listening on port ' + port);
