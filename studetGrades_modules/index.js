@@ -52,7 +52,7 @@ class Grades extends EventEmitter {
             			});
             		}
             });
-            if(tempJson == null){ 
+            if(tempJson.length == 0){ 
                 tempJson = {'Error':'cannot find any students in year: ' + year,'status':false};
             }
             this.json = tempJson;
