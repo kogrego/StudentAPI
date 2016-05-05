@@ -2,7 +2,7 @@
 
 Hello,
 This is a simple API for student average grade.
-the base URL to use the API is https://studentsapi.herokuapp.com
+the base URL to use the API is https://studentsapi.herokuapp.com<br>
 the server returns a JSON object containing the data you requested or error information.
 
 ### Get all students data
